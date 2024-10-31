@@ -1,0 +1,28 @@
+import Message from "@/models/Message";
+
+function ChatMessage({ message }: { message: Message }) {
+    return (
+        <>
+               
+                        <div className="col-start-6 col-end-13 p-3 rounded-lg">
+                            <div className="flex items-center justify-start flex-row-reverse">
+                                <div
+                                    className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">
+                                    foto
+                                </div>
+                                <div
+                                    className="relative mr-3 text-sm bg-indigo-100
+                             py-2 px-4 shadow rounded-xl"
+                                    id="chat-box">
+                                    <div>
+                                        <p>{message.message}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+               
+        </>
+    )
+}
+
+export default ChatMessage;
