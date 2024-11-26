@@ -3,8 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import UserLogin from "../../models/UserLogin";
 import { AuthContext } from "../../contexts/AuthContext";
 import { RotatingLines } from "react-loader-spinner";
-import ModalforgotPassword from "@/components/forgotPasswordModal/ModalforgotPassword";
-import MyModal from "@/components/editUser/EditUserModal";
 
 function Login() {
   const navigate = useNavigate();
