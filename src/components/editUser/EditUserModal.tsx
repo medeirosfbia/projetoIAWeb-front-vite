@@ -1,14 +1,14 @@
 import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { ChangeEvent, useContext, useEffect, useState } from 'react'
 import User from '@/models/User'
-import { createUser, search, update } from '@/services/AuthService'
+import { update } from '@/services/AuthService'
 import AuthContext from '@/contexts/AuthContext'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import DeleteUser from './DeleteUser'
 
 export default function EditUserModal() {
   let [isOpen, setIsOpen] = useState(false)
-  const { user, handleLogout } = useContext(AuthContext);
+  const { user} = useContext(AuthContext);
   const token = user.token
   const navigate  = useNavigate()
   function open() {

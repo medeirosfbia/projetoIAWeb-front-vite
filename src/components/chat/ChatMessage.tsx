@@ -1,5 +1,4 @@
 import Message from "@/models/Message";
-import User from "@/models/User";
 import UserLogin from "@/models/UserLogin";
 
 function ChatMessage({ message, user }: { message: Message, user: UserLogin }) {

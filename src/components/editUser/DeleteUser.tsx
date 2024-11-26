@@ -1,6 +1,6 @@
 import AuthContext from "@/contexts/AuthContext"
 import { deleteUser } from "@/services/AuthService"
-import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react"
+import { Button, Dialog, DialogPanel } from "@headlessui/react"
 import { useContext, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
