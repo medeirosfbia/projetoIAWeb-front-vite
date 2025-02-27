@@ -2,7 +2,7 @@ import Message from "@/models/Message";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: `http://ec2-3-239-24-90.compute-1.amazonaws.com:8080`
+  baseURL: `http://localhost:8090`
 });
 
 export const createUser = async(url: string, dados: Object, setDados: Function) => {
