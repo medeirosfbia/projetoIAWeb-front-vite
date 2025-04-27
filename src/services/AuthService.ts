@@ -29,6 +29,10 @@ export const saveMessage = async(endpoint: string, message: Message, header: Obj
   await api.post(endpoint, message, header) 
 }
 
+export const updateUserType = async(url: string, email: String, header: Object) => {
+  await api.put(url, email, header)
+}
+
 
 // export const cadastrar = async(url: string, dados: Object, setDados: Function, header: Object) => {
 //   const resposta = await api.post(url, dados, header)
