@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai'
-import { FiEdit, FiLogOut, FiSidebar } from "react-icons/fi";
+import { FiEdit, FiLogOut, FiSidebar, FiHelpCircle } from "react-icons/fi";
 import { Link, useNavigate } from 'react-router-dom';
 import EditUserModal from '../editUser/EditUserModal';
 import AuthContext from '@/contexts/AuthContext';
 import { listChats } from '@/services/ChatService';
 import { ToastAlerts } from '@/utils/ToastAlerts';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 interface Chat {
     chat_id: string;
@@ -42,6 +43,8 @@ function Sidebar() {
         fetchChats();
     }, [user]);
 
+    useHotkeys('ctrl+shift+l', () => logout(), [user]);
+
 
 
     return (
@@ -67,24 +70,18 @@ function Sidebar() {
                 <div className='flex-1 flex flex-col justify-between overflow-hidden'>
                     <nav className={` ${!isCollapsed ? 'overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-600 scrollbar-track-neutral-800 max-h-[500px]' : ''} flex-1`}>
                         {chats.map(chat => (
-                            <div key={chat.chat_id} className={` ${!isCollapsed ? ' p-2 rounded hover:bg-neutral-900 cursor-pointer transition-all' : ''} flex-1`} onClick={() => navigate(`/chat/${chat.chat_id}`)}>
-                                <span className={`ml-2 transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                    {!isCollapsed && <p className="truncate">{chat.title}</p>}
-                                    {!isCollapsed && <small className="truncate">
-                                        {chat.updated_at.toLocaleString('pt-BR')}
-                                        {/* {new Date(chat.updated_at).toLocaleString('pt-BR', {
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                            // second: '2-digit',
-                                            day: '2-digit',
-                                            month: '2-digit',
-                                            year: 'numeric', 
-                                        })} */}
-                                    </small>}
+                            <div
+                                key={chat.chat_id}
+                                className={`flex items-center gap-2 ${!isCollapsed ? 'px-3 py-2 mb-1 rounded-md bg-neutral-800 hover:bg-neutral-700 cursor-pointer transition-colors' : ''}`}
+                                onClick={() => navigate(`/chat/${chat.chat_id}`)}
+                            >
+                                <span className={`ml-2 transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'} flex-1`}>
+                                    {!isCollapsed && (
+                                        <p className="truncate font-normal text-gray-200">{chat.title}</p>
+                                    )}
                                 </span>
                             </div>
                         ))}
-
                     </nav>
 
 
@@ -98,10 +95,17 @@ function Sidebar() {
                             </span>
                         </button> */}
                         <EditUserModal isCollapsed={isCollapsed} />
+                        <Link to="/help">
+                          <button className='flex items-center py-2.5 px-4 w-full text-left rounder transition duration-300 hover:bg-blue-700 hover:text-white'>
+                            <FiHelpCircle className='w-6 h-6 mr-2' />
+                            <span className={`transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+                              {!isCollapsed && "Ajuda"}
+                            </span>
+                          </button>
+                        </Link>
                         <Link to="/" className='' onClick={logout} >
                         <button className='flex items-center py-2.5 px-4 w-full text-left rounder transition duration-300 hover:bg-red-700 hover:text-white'>
-                            
-                                <FiLogOut className='w-6 h-6 mr-2' />
+                            <FiLogOut className='w-6 h-6 mr-2' />
                             <span className={`transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
                                 {
                                     !isCollapsed && "Sair"

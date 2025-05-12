@@ -27,7 +27,7 @@ function ChatInput({ addMessage }: { addMessage: (text: string) => void }) {
                                 type="text"
                                 className="flex w-full bg-transparent
                                 rounded-xl  focus:outline-none 
-                                focus:border-gray-300 pl-4 h-10"
+                                focus:border-gray-300 pl-4 h-10 text-white"
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                             />

@@ -96,4 +96,12 @@ body {
   font-size: 1.15em;
 }
 
+input, label, small {
+  font-size: 1rem;
+  color: #222;
+}
+.dark input, .dark label, .dark small {
+  color: #eee;
+}
+
 

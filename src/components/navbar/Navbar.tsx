@@ -9,9 +9,11 @@ function Navbar() {
   const { user, handleLogout } = useContext(AuthContext);
 
   function logout() {
-    handleLogout();
-    alert('Usuário deslogado com sucesso');
-    navigate('/login');
+    if (window.confirm("Tem certeza que deseja sair?")) {
+      handleLogout();
+      alert('Usuário deslogado com sucesso');
+      navigate('/login');
+    }
   }
 
   let navbarComponent;

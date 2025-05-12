@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify'
 import MyModal from './components/editUser/EditUserModal'
 import {AdminRoute } from './pages/admin/AdminRoute'
 import { Admin } from './pages/admin/Admin'
+import Help from './pages/help/Help'
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path='/home' element={<Home />} />
               <Route path='/edit:id' element={<MyModal isCollapsed={false} />} />
+              <Route path='/help' element={<Help />} />
               <Route element={<AdminRoute/>}> 
                 <Route path='/admin' element={<Admin/>}/>
               </Route>

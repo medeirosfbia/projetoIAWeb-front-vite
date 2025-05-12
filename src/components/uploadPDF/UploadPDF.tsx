@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { RotatingLines } from "react-loader-spinner";
 
 export const UploadPDF = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -44,8 +45,9 @@ export const UploadPDF = () => {
         onClick={handleUpload} 
         disabled={loading}
         className="bg-blue-700 text-white px-4 py-2 rounded disabled:bg-gray-400"
+        title="Enviar arquivo PDF"
       >
-        {loading ? "Enviando..." : "Enviar PDF"}
+        {loading ? <RotatingLines strokeColor="white" strokeWidth="5" animationDuration="0.75" width="24" visible={true} /> : "Enviar PDF"}
       </button>
       {message && <p className="text-sm text-gray-700">{message}</p>}
     </div>

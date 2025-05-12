@@ -17,7 +17,7 @@ export function ToastAlerts(mensagem: string, tipo: string) {
             break;
 
         case 'erro':
-            toast.error(mensagem, {
+            toast.error(mensagem + " Se o problema persistir, verifique os dados ou contate o suporte.", {
                 position: 'top-right',
                 autoClose: 2000,
                 hideProgressBar: false,

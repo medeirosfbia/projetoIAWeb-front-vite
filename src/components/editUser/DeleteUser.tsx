@@ -28,15 +28,19 @@ function DeleteUser() {
 
     async function deleteU() {
         try {
+            if (!window.confirm("Tem certeza? Esta ação não pode ser desfeita.")) {
+                close();
+                return;
+            }
             await deleteUser(`/user/${id}`, {
                 headers: {
                     Authorization: token
                 }
             })
-            ToastAlerts('Usuario deletado', "sucesso")
+            ToastAlerts('Usuário deletado com sucesso!', "sucesso")
             logout()
         } catch (error) {
-            ToastAlerts('Deu pra deletar não', "erro")
+            ToastAlerts('Não foi possível deletar o usuário. Tente novamente ou contate o suporte.', "erro")
         }
     }
 

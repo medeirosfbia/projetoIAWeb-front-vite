@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
-import { ChangeEvent, useContext, useEffect, useState } from 'react'
+import { ChangeEvent, useContext, useEffect, useRef, useState } from 'react'
 import User from '@/models/User'
 import { update } from '@/services/AuthService'
 import AuthContext from '@/contexts/AuthContext'
@@ -34,36 +34,66 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
 
   const [newUser, setnewUser] = useState<User>(user);
 
+  // Refs para focar nos campos
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+
+  // Estados de erro
+  const [errors, setErrors] = useState({
+    email: false,
+    password: false,
+    confirmPassword: false,
+  });
+
   function updateState(e: ChangeEvent<HTMLInputElement>) {
     setnewUser({ ...newUser, [e.target.name]: e.target.value });
+    setErrors(prev => ({ ...prev, [e.target.name]: false }));
   }
 
   function handleConfirmPassword(e: ChangeEvent<HTMLInputElement>) {
     setConfirmPassword(e.target.value);
+    setErrors(prev => ({ ...prev, confirmPassword: false }));
   }
 
   async function submitNewUser(event: ChangeEvent<HTMLFormElement>) {
     event.preventDefault();
+    // Validação de e-mail simples
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newUser.email)) {
+      setErrors(prev => ({ ...prev, email: true }));
+      emailRef.current?.focus();
+      ToastAlerts("Digite um e-mail válido!", "erro");
+      return;
+    }
+    // Validação de senha
+    if (newUser.password.length < 8 || !/\d/.test(newUser.password) || !/[a-zA-Z]/.test(newUser.password)) {
+      setErrors(prev => ({ ...prev, password: true }));
+      passwordRef.current?.focus();
+      ToastAlerts("A senha deve ter pelo menos 8 caracteres, incluindo letras e números.", "erro");
+      return;
+    }
     if (!newUser.password || !confirmPassword) {
       ToastAlerts("Preencha a senha e a confirmação de senha!", "info");
       return;
     }
-    if (confirmPassword === newUser.password) {
-      try {
-        await update(`/user/update`, newUser, setnewUser, {
-          headers: { Authorization: token },
-        }
-        );
-        ToastAlerts("Usuário Atualizado com sucesso!", "sucesso")
-        close();
-      } catch (error) {
-        ToastAlerts("Erro ao Atualizar usuário!", "erro")
-        // console.log(token)
-      }
-    } else {
-      ToastAlerts("Senhas não conferem!", "erro")
+    if (confirmPassword !== newUser.password) {
+      setErrors(prev => ({ ...prev, confirmPassword: true }));
+      confirmPasswordRef.current?.focus();
+      ToastAlerts("Senhas não conferem!", "erro");
       setnewUser({ ...newUser, password: '' })
       setConfirmPassword('')
+      return;
+    }
+    try {
+      await update(`/user/update`, newUser, setnewUser, {
+        headers: { Authorization: token },
+      });
+      ToastAlerts("Usuário Atualizado com sucesso!", "sucesso")
+      close();
+    } catch (error: any) {
+      const errorMsg = error?.response?.data?.message || "Erro ao Atualizar usuário!";
+      ToastAlerts(errorMsg, "erro")
     }
   }
 
@@ -153,32 +183,47 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
                       </div>
                       <div className="mb-6">
                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-600">Novo Email</label>
-                        <input type="email" id="email" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+                        <input
+                          ref={emailRef}
+                          type="email"
+                          id="email"
+                          className={`bg-gray-50 border ${errors.email ? 'border-red-500' : 'border-gray-300'} text-gray-900 text-sm rounded-lg focus:ring-blue-500 
 focus:border-blue-500 block w-full p-2.5  dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 
-dark:focus:border-blue-500" placeholder={user.email}
+dark:focus:border-blue-500`}
+                          placeholder={user.email}
                           value={newUser.email}
                           name="email"
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => updateState(e)
-                          } />
+                          onChange={updateState}
+                        />
                       </div>
                       <div className="mb-6">
                         <label htmlFor="senha" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-600">Nova Senha</label>
-                        <input type="password" id="senha" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+                        <input
+                          ref={passwordRef}
+                          type="password"
+                          id="senha"
+                          className={`bg-gray-50 border ${errors.password ? 'border-red-500' : 'border-gray-300'} text-gray-900 text-sm rounded-lg focus:ring-blue-500 
 focus:border-blue-500 block w-full p-2.5 dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 
-dark:focus:border-blue-500" placeholder="•••••••••"
+dark:focus:border-blue-500`}
+                          placeholder="•••••••••"
                           value={newUser.password}
                           name="password"
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => updateState(e)
-                          } />
+                          onChange={updateState}
+                        />
+                        <small className="text-gray-500 dark:text-gray-400">A senha deve ter pelo menos 8 caracteres, incluir letras e números.</small>
                       </div>
                       <div className="mb-6">
                         <label htmlFor="confirm_password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-600">Confirmar senha</label>
-                        <input type="password" id="confirm_password" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
+                        <input
+                          ref={confirmPasswordRef}
+                          type="password"
+                          id="confirm_password"
+                          className={`bg-gray-50 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} text-gray-900 text-sm rounded-lg 
 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark 
-dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="•••••••••"
+dark:focus:ring-blue-500 dark:focus:border-blue-500`}
+                          placeholder="•••••••••"
                           value={confirmPassword}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => handleConfirmPassword(e)
-                          }
+                          onChange={handleConfirmPassword}
                         />
                       </div>
                       <button

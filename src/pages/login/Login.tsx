@@ -3,12 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import UserLogin from "../../models/UserLogin";
 import { AuthContext } from "../../contexts/AuthContext";
 import { RotatingLines } from "react-loader-spinner";
+import { FiHelpCircle } from "react-icons/fi";
 
 function Login() {
   const navigate = useNavigate();
 
   const [userLogin, setUserLogin] = useState<UserLogin>(
     {} as UserLogin);
+
+  const [keepConnected, setKeepConnected] = useState(false);
 
   const { user, handleLogin } = useContext(AuthContext);
 
@@ -26,16 +29,12 @@ function Login() {
 
   function login(event: ChangeEvent<HTMLFormElement>) {
     event.preventDefault()
-    handleLogin(userLogin)
+    handleLogin(userLogin, keepConnected)
   }
-
-
-
 
   return (
     <>
       <div className="grid grid-cols-1  place-items-center ">
-
         <div className="max-w-2xl p-5 mx-auto h-dvh">
           <div className="bg-white shadow-md border border-gray-200 rounded-lg max-w-sm p-4 sm:p-6 lg:p-8 dark:bg-gray-800 dark:border-gray-700">
             <form className="space-y-6 p-10" action="#" onSubmit={login}>
@@ -60,14 +59,20 @@ function Login() {
                   value={userLogin.password}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => updateState(e)} />
               </div>
-              <div className="flex items-start">
-                {/* <ModalforgotPassword/> */}
-                {/* <MyModal /> */}
-                {/* <a data-dialog-target="modal" className="text-sm text-blue-700 hover:underline ml-auto dark:text-blue-500">Esqueceu a Senha?</a> */}
+              <div className="flex items-center mb-1">
+                <input
+                  id="keepConnected"
+                  type="checkbox"
+                  checked={keepConnected}
+                  onChange={e => setKeepConnected(e.target.checked)}
+                  className="mr-2"
+                />
+                <label htmlFor="keepConnected" className="text-sm text-gray-700 dark:text-gray-300">
+                  Me manter conectado?
+                </label>
               </div>
               <button type="submit" className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg
-               text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-
+               text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-2">
                 {isLoading ? <RotatingLines
                   strokeColor="white"
                   strokeWidth="5"
@@ -84,15 +89,16 @@ function Login() {
                   </Link>
                 </a>
               </div>
+              <div className="mt-2 text-sm text-center flex justify-center items-center gap-1">
+                <FiHelpCircle className="inline" />
+                <Link to="/help" className="text-blue-700 hover:underline dark:text-blue-400">
+                  Precisa de ajuda?
+                </Link>
+              </div>
             </form>
           </div>
-
         </div>
-
       </div>
-
-
-
     </>
   );
 }
