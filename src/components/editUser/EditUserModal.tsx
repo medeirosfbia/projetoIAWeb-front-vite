@@ -105,7 +105,7 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
 
       <Button
         onClick={open}
-        className='flex items-center py-2.5 px-4 w-full text-left rounded transition duration-300 hover:bg-gray-900 hover:text-white focus:bg-blue-700 focus:text-white outline-none'
+        className='flex items-center py-2.5 px-4 w-full text-left  transition duration-300 hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white outline-none'
         tabIndex={0}
         aria-label="Editar Perfil"
       >

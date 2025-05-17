@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown';
 
 function ChatAnswer({ answer }: { answer: any}) {
     return (
@@ -6,7 +7,7 @@ function ChatAnswer({ answer }: { answer: any}) {
                   <div className="flex flex-row items-center">
                     <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
                       <div>
-                      <p>{answer}</p>
+                      <ReactMarkdown>{answer}</ReactMarkdown>
                       </div>
                     </div>
                   </div>
