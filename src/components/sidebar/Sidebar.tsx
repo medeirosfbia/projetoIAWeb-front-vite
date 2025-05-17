@@ -4,23 +4,18 @@ import { FiEdit, FiLogOut, FiSidebar, FiHelpCircle } from "react-icons/fi";
 import { Link, useNavigate } from 'react-router-dom';
 import EditUserModal from '../editUser/EditUserModal';
 import AuthContext from '@/contexts/AuthContext';
-import { listChats } from '@/services/ChatService';
 import { ToastAlerts } from '@/utils/ToastAlerts';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useChatContext } from '@/contexts/ChatContext';
 
-interface Chat {
-    chat_id: string;
-    title: string;
-    updated_at: Date;
-}
+
 
 function Sidebar() {
 
     const navigate = useNavigate();
     const [isCollapsed, setIsCollapsed] = useState(true)
-    const [chats, setChats] = useState<Chat[]>([]);
-
     const { user, handleLogout } = useContext(AuthContext);
+    const { chats, refreshChats } = useChatContext();
 
     function logout() {
         handleLogout();
@@ -29,19 +24,10 @@ function Sidebar() {
     }
 
     useEffect(() => {
-        async function fetchChats() {
-            if (user && user.username) {
-                try {
-                    const chatsList = await listChats('http://localhost:5000/chats', user.username);
-                    setChats(chatsList);
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-        }
+        refreshChats();
+    }, []);
 
-        fetchChats();
-    }, [user]);
+ 
 
     useHotkeys('ctrl+shift+l', () => logout(), [user]);
 
@@ -54,10 +40,10 @@ function Sidebar() {
                     {
                         !isCollapsed && (
                             <button
-                                className='flex items-center group cursor-pointer transition-colors duration-200 hover:bg-blue-700 px-2 py-1 rounded'
+                                className='flex items-center group cursor-pointer transition-colors duration-200 hover:bg-blue-700  p-1 rounded'
                                 title="Novo Chat"
                                 tabIndex={0}
-                                onClick={() => {/* ação de novo chat, se houver */}}
+                                onClick={() => navigate('/chat')}
                                 aria-label="Novo Chat"
                             >
                                 <FiEdit className='w-6 h-6 mr-2 group-hover:text-white' />
@@ -78,7 +64,7 @@ function Sidebar() {
                         {chats.map(chat => (
                             <div
                                 key={chat.chat_id}
-                                className={`flex items-center gap-2 ${!isCollapsed ? 'px-3 py-2 mb-1 rounded-md bg-neutral-800 hover:bg-blue-700 focus:bg-blue-800 cursor-pointer transition-colors outline-none ring-0 focus:ring-2 focus:ring-blue-400' : ''}`}
+                                className={`flex items-center gap-2 ${!isCollapsed ? 'px-3 py-2 mb-1  bg-neutral-800 hover:bg-blue-700 focus:bg-blue-800 cursor-pointer transition-colors outline-none ring-0 focus:ring-2 focus:ring-blue-400' : ''}`}
                                 onClick={() => navigate(`/chat/${chat.chat_id}`)}
                                 tabIndex={0}
                                 role="button"
@@ -97,7 +83,7 @@ function Sidebar() {
                         <EditUserModal isCollapsed={isCollapsed} />
                         <Link to="/help" tabIndex={-1}>
                           <button
-                            className='flex items-center py-2.5 px-4 w-full text-left rounded transition duration-300 hover:bg-blue-700 hover:text-white focus:bg-blue-800 focus:text-white outline-none'
+                            className='flex items-center py-2.5 px-4 w-full text-left  transition duration-300 hover:bg-blue-700 hover:text-white focus:bg-blue-800 focus:text-white outline-none'
                             tabIndex={0}
                             aria-label="Ajuda"
                           >
@@ -109,7 +95,7 @@ function Sidebar() {
                         </Link>
                         <Link to="/" className='' onClick={logout} tabIndex={-1}>
                         <button
-                            className='flex items-center py-2.5 px-4 w-full text-left rounded transition duration-300 hover:bg-red-700 hover:text-white focus:bg-red-800 focus:text-white outline-none'
+                            className='flex items-center py-2.5 px-4 w-full text-left transition duration-300 hover:bg-red-700 hover:text-white focus:bg-red-800 focus:text-white outline-none'
                             tabIndex={0}
                             aria-label="Sair"
                         >
