@@ -24,7 +24,7 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
 
   useEffect(() => {
     if (token === '') {
-      ToastAlerts('Você precisa estar logado para isso', "info")
+      ToastAlerts('Você precisa estar logado para isso.', "info")
       navigate('/login')
     }
   }, [token])
@@ -103,7 +103,12 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
     <>
 
 
-      <Button onClick={open} className='flex items-center py-2.5 px-4 w-full text-left rounder transition duration-300 hover:bg-gray-900 hover:text-white'>
+      <Button
+        onClick={open}
+        className='flex items-center py-2.5 px-4 w-full text-left  transition duration-300 hover:bg-purple-800 hover:text-white focus:bg-purple-700 focus:text-white outline-none'
+        tabIndex={0}
+        aria-label="Editar Perfil"
+      >
         <FiEdit2 className='w-6 h-6 mr-2' />
         <span className={`transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
           {
@@ -111,7 +116,6 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
           }
         </span>
       </Button>
-
       <Dialog open={isOpen} as="div" className="relative z-10 focus:outline-none " onClose={close} __demoMode>
         <div className="fixed inset-0 z-10  overflow-y-auto backdrop-blur-2xl bg-white/5">
           <div className="flex min-h-full items-center justify-center p-4">
@@ -141,19 +145,20 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
 
                       <div>
                         <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-600"> Novo Nome</label>
-                        <input type="text" id="name"
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        <input
+                          type="text"
+                          id="name"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500 transition"
                           placeholder={user.name}
                           name="name"
                           value={newUser.name}
-                          onChange={(e: ChangeEvent<HTMLInputElement>) => updateState(e)
-                          }
+                          onChange={(e: ChangeEvent<HTMLInputElement>) => updateState(e)}
                         />
                       </div>
                       <div>
                         <label htmlFor="lastname" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-600">Novo Sobrenome</label>
                         <input type="text" id="lastname"
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           placeholder={user.lastname}
                           name="lastname"
                           value={newUser.lastname}
@@ -163,7 +168,7 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
                       <div className="mb-6">
                         <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-600">Novo Nome de Usuário</label>
                         <input type="text" id="username"
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full 
   p-2.5  dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500"
                           placeholder={user.username}
                           name="username"
@@ -173,7 +178,7 @@ export default function EditUserModal({ isCollapsed }: { isCollapsed: boolean })
                       </div>
                       <div className="mb-6">
                         <label htmlFor="picture" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-600">Nova Foto URL</label>
-                        <input type="url" id="picture" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 
+                        <input type="url" id="picture" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 
   focus:border-blue-500 block w-full p-2.5  dark:border-gray-500 dark:bg-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-blue-500
    dark:focus:border-blue-500" placeholder={user.picture}
                           value={newUser.picture}
@@ -229,7 +234,7 @@ dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                       <button
                         type="submit"
                         disabled={!newUser.password || !confirmPassword}
-                        className={`text-white mr-3 ${(!newUser.password || !confirmPassword) ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-700 hover:bg-blue-800'} focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800`}
+                        className={`text-white mr-3 ${(!newUser.password || !confirmPassword) ? 'bg-gray-400 cursor-not-allowed' : 'bg-purple-800 hover:bg-purple-900'} focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-800`}
                       >
                         Editar
                       </button>

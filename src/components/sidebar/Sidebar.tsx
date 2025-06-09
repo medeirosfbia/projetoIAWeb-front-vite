@@ -4,44 +4,30 @@ import { FiEdit, FiLogOut, FiSidebar, FiHelpCircle } from "react-icons/fi";
 import { Link, useNavigate } from 'react-router-dom';
 import EditUserModal from '../editUser/EditUserModal';
 import AuthContext from '@/contexts/AuthContext';
-import { listChats } from '@/services/ChatService';
 import { ToastAlerts } from '@/utils/ToastAlerts';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useChatContext } from '@/contexts/ChatContext';
 
-interface Chat {
-    chat_id: string;
-    title: string;
-    updated_at: Date;
-}
+
 
 function Sidebar() {
 
     const navigate = useNavigate();
     const [isCollapsed, setIsCollapsed] = useState(true)
-    const [chats, setChats] = useState<Chat[]>([]);
-
     const { user, handleLogout } = useContext(AuthContext);
+    const { chats, refreshChats } = useChatContext();
 
     function logout() {
         handleLogout();
-        ToastAlerts('Usuário deslogado com sucesso', "info");
+        ToastAlerts('Usuário deslogado com sucesso.', "info");
         navigate('/login');
     }
 
     useEffect(() => {
-        async function fetchChats() {
-            if (user && user.username) {
-                try {
-                    const chatsList = await listChats('http://localhost:5000/chats', user.username);
-                    setChats(chatsList);
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-        }
+        refreshChats();
+    }, []);
 
-        fetchChats();
-    }, [user]);
+ 
 
     useHotkeys('ctrl+shift+l', () => logout(), [user]);
 
@@ -50,19 +36,25 @@ function Sidebar() {
     return (
         <>
             <div className={`h-screen bg-neutral-800 text-gray-100 flex flex-col ${isCollapsed ? 'w-15' : 'w-80'} transition-all duration-300`}>
-                <div className="flex items-center justify-between h-12  border-b border-gray-700 p-4">
+                <div className="flex items-center justify-between h-12 border-b border-gray-700 p-4">
                     {
                         !isCollapsed && (
-                            <button className='flex items-center'>
-                                <FiEdit className='w-6 h-6 mr-2' />
-                                <h1 className=" text-lg  ">Novo Chat
-                                </h1>
+                            <button
+                                className='flex items-center group cursor-pointer transition-colors duration-200 hover:bg-purple-800  p-1 rounded'
+                                title="Novo Chat"
+                                tabIndex={0}
+                                onClick={() => navigate('/chat')}
+                                aria-label="Novo Chat"
+                            >
+                                <FiEdit className='w-6 h-6 mr-2 group-hover:text-white' />
+                                <h1 className="text-lg group-hover:text-white">Novo Chat</h1>
                             </button>
                         )
                     }
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         className='text-gray-100 focus:outline-none'
+                        aria-label={isCollapsed ? "Abrir menu lateral" : "Fechar menu lateral"}
                     >
                         {isCollapsed ? <FiSidebar size={24} /> : <AiOutlineClose size={24} />}
                     </button>
@@ -72,8 +64,12 @@ function Sidebar() {
                         {chats.map(chat => (
                             <div
                                 key={chat.chat_id}
-                                className={`flex items-center gap-2 ${!isCollapsed ? 'px-3 py-2 mb-1 rounded-md bg-neutral-800 hover:bg-neutral-700 cursor-pointer transition-colors' : ''}`}
+                                className={`flex items-center gap-2 ${!isCollapsed ? 'px-3 py-2 mb-1  bg-neutral-800 hover:bg-purple-800 focus:bg-purple-800 cursor-pointer transition-colors outline-none ring-0 focus:ring-2 focus:ring-purple-400' : ''}`}
                                 onClick={() => navigate(`/chat/${chat.chat_id}`)}
+                                tabIndex={0}
+                                role="button"
+                                aria-label={`Abrir chat ${chat.title}`}
+                                onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate(`/chat/${chat.chat_id}`); }}
                             >
                                 <span className={`ml-2 transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'} flex-1`}>
                                     {!isCollapsed && (
@@ -83,28 +79,26 @@ function Sidebar() {
                             </div>
                         ))}
                     </nav>
-
-
                     <div className='mb-10 transition-opacity duration-300 delay-300'>
-                        {/* <button className='flex items-center py-2.5 px-4 w-full text-left rounder transition duration-300 hover:bg-gray-900 hover:text-white'>
-                            <EditUserModal />
-                            <span className={`transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-                                {
-                                    !isCollapsed && "Editar Perfil"
-                                }
-                            </span>
-                        </button> */}
                         <EditUserModal isCollapsed={isCollapsed} />
-                        <Link to="/help">
-                          <button className='flex items-center py-2.5 px-4 w-full text-left rounder transition duration-300 hover:bg-blue-700 hover:text-white'>
+                        <Link to="/help" tabIndex={-1}>
+                          <button
+                            className='flex items-center py-2.5 px-4 w-full text-left  transition duration-300 hover:bg-purple-800 hover:text-white focus:bg-purple-800 focus:text-white outline-none'
+                            tabIndex={0}
+                            aria-label="Ajuda"
+                          >
                             <FiHelpCircle className='w-6 h-6 mr-2' />
                             <span className={`transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
                               {!isCollapsed && "Ajuda"}
                             </span>
                           </button>
                         </Link>
-                        <Link to="/" className='' onClick={logout} >
-                        <button className='flex items-center py-2.5 px-4 w-full text-left rounder transition duration-300 hover:bg-red-700 hover:text-white'>
+                        <Link to="/" className='' onClick={logout} tabIndex={-1}>
+                        <button
+                            className='flex items-center py-2.5 px-4 w-full text-left transition duration-300 hover:bg-red-700 hover:text-white focus:bg-red-800 focus:text-white outline-none'
+                            tabIndex={0}
+                            aria-label="Sair"
+                        >
                             <FiLogOut className='w-6 h-6 mr-2' />
                             <span className={`transition-opacity duration-300 delay-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
                                 {

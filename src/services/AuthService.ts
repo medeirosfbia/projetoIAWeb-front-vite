@@ -33,12 +33,6 @@ export const updateUserType = async(url: string, email: String, header: Object) 
   await api.put(url, email, header)
 }
 
-
-// export const cadastrar = async(url: string, dados: Object, setDados: Function, header: Object) => {
-//   const resposta = await api.post(url, dados, header)
-//   setDados(resposta.data)
-// }
-
 export const deleteUser = async(url: string, header: Object) => {
   await api.delete(url, header)
 }
