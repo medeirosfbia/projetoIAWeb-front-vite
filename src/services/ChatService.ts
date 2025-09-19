@@ -5,18 +5,18 @@ const chatAPI = axios.create({
   baseURL: import.meta.env.VITE_CHAT_API
 });
 
-  export async function chatAdd(endpoint: string,text: string, userId: string){
-    try {
-      const response = await chatAPI.post(endpoint, {message: text}, {params: {user_id: userId}});
-      return response.data;
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(error.response.data.error || 'Erro no servidor');
-      } else {
-        throw new Error('Erro na conexão');
-      }
-    }
-  }
+  // export async function chatAdd(endpoint: string,text: string, userId: string){
+  //   try {
+  //     const response = await chatAPI.post(endpoint, {message: text}, {params: {user_id: userId}});
+  //     return response.data;
+  //   } catch (error: any) {
+  //     if (error.response) {
+  //       throw new Error(error.response.data.error || 'Erro no servidor');
+  //     } else {
+  //       throw new Error('Erro na conexão');
+  //     }
+  //   }
+  // }
 
     export async function resumeChat(endpoint: string, userId: string){
     try {
@@ -31,7 +31,7 @@ const chatAPI = axios.create({
     }
   }
 
-export async function chatStream(endpoint: string, text: string, userId: string) {
+export async function chatStream(endpoint: string, model: string, text: string, userId: string) {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_CHAT_API}${endpoint}?user_id=${userId}`,
@@ -40,7 +40,7 @@ export async function chatStream(endpoint: string, text: string, userId: string)
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: text})
+        body: JSON.stringify({ message: text, model: model }),
       }
     )
   if (!response.ok || !response.body) {

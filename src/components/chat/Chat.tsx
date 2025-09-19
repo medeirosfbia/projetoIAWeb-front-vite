@@ -52,7 +52,7 @@ function Chat() {
         }
     }
   
- async function handleSendMessage(text: string, model: string) {
+ async function handleSendMessage(text: string) {
     // setLoading(true);
 
     const userMessage: Message = {
