@@ -11,6 +11,7 @@ import Sidebar from "../sidebar/Sidebar";
 import { ToastAlerts } from "@/utils/ToastAlerts";
 import Navbar from "../navbar/Navbar";
 import { useChatContext } from "@/contexts/ChatContext";
+import { useModelContext } from "@/contexts/ModelContext";
 
 function Chat() {
 
@@ -18,6 +19,7 @@ function Chat() {
     const [loading, setLoading] = useState<boolean>(false);
     const { user } = useContext(AuthContext);
     const { refreshChats } = useChatContext();
+    const { model } = useModelContext();
     const { chatId } = useParams();
     const navigate = useNavigate();
 
@@ -51,12 +53,12 @@ function Chat() {
         }
     }
 
-    async function addMessages(text: string, chatId: string) {
+    async function addMessages(model: string, text: string, chatId: string) {
         setLoading(true);
         const newMessage: Message = { message: text, answer: '', user: user, role: "user", content: text, timestamp: new Date().toISOString() };
         setMessages([...messages, newMessage]);
         try {
-            await chatAdd(`http://localhost:5000/chats/${chatId}/add`, text, user.username);
+            await chatAdd(`http://localhost:5000/chats/${chatId}/add`, model, text, user.username);
             loadMessages(chatId);
         } catch (error) {
             console.error(error);
@@ -67,12 +69,12 @@ function Chat() {
     }
 
 
-    async function addMessageChatNew(text: string) {
+    async function addMessageChatNew(model: string, text: string) {
         const newMessage: Message = { message: text, answer: '', user: user, role: "user", content: text, timestamp: new Date().toISOString() };
         setMessages([...messages, newMessage]);
         setLoading(true);
         try {
-            const resp = await chatAdd('http://localhost:5000/chats/new', text, user.username);
+            const resp = await chatAdd('http://localhost:5000/chats/new', model, text, user.username);
             console.log("Resposta da API:", resp);
             const newChatId = resp.answer.chat_id;  
             navigate(`/chat/${newChatId}`);
@@ -115,9 +117,9 @@ function Chat() {
                         </div>
                         <ChatInput addMessage={(text: string) => {
                             if (chatId) {
-                                addMessages(text, chatId);
+                                addMessages(model, text, chatId);
                             } else {
-                                addMessageChatNew(text);
+                                addMessageChatNew(model, text);
                             }
                         }} />
                     </div>

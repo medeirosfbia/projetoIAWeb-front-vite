@@ -1,9 +1,9 @@
 
 import axios from "axios";
 
-  export async function chatAdd(endpoint: string,text: string, userId: string){
+  export async function chatAdd(endpoint: string, model:string, text: string, userId: string){
     try {
-      const response = await axios.post(endpoint, {message: text}, {params: {user_id: userId}});
+      const response = await axios.post(endpoint, {model: model, message: text}, {params: {user_id: userId}});
       return response.data;
     } catch (error: any) {
       if (error.response) {
