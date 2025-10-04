@@ -5,6 +5,7 @@ import { deleteChat } from "@/services/ChatService";
 import { ToastAlerts } from "@/utils/ToastAlerts";
 import AuthContext from "@/contexts/AuthContext";
 import { useChatContext } from "@/contexts/ChatContext";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface DeleteChatProps {
   chatId: string;
@@ -15,6 +16,8 @@ export default function DeleteChat({ chatId, chatTitle }: DeleteChatProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useContext(AuthContext);
   const { refreshChats } = useChatContext();
+    const navigate = useNavigate();
+  const { chatId: currentChatId } = useParams();
 
   function open() {
     setIsOpen(true);
@@ -29,6 +32,10 @@ export default function DeleteChat({ chatId, chatTitle }: DeleteChatProps) {
       await deleteChat("/chats", user.username, chatId);
       ToastAlerts("Chat deletado com sucesso.", "sucesso");
       refreshChats();
+      // Se o chat deletado é o que está aberto, redireciona
+      if (currentChatId === chatId) {
+        navigate("/home");
+      }
     } catch (error: any) {
       ToastAlerts(error.message || "Erro ao deletar chat", "erro");
     } finally {
