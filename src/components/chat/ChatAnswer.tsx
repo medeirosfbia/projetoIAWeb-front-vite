@@ -1,53 +1,61 @@
-import ReactMarkdown from 'react-markdown';
-import { useState } from 'react';
-import { FiVolume2 } from 'react-icons/fi';
+import ReactMarkdown from "react-markdown";
+import { FiVolume2, FiPause, FiPlay, FiStopCircle } from "react-icons/fi";
+import { useTTS } from "../tts/useTTS";
+import { useModelContext } from "@/contexts/ModelContext";
 
-function useTextToSpeech() {
-    const speak = (text: string, onEnd: () => void) => {
-        const speech = new SpeechSynthesisUtterance(text);
-        speech.lang = 'pt-BR';
-        speech.onend = onEnd;
-        window.speechSynthesis.speak(speech);
-    };
+function ChatAnswer({ answer, isStreaming }: { answer: string, isStreaming: boolean }) {
+    const { speak, pause, resume, stop, isSpeaking, isPaused } = useTTS();
+    const { model } = useModelContext();
 
-    return { speak };
-}
-
-function ChatAnswer({ answer }: { answer: any }) {
-    const { speak } = useTextToSpeech();
-    const [isSpeaking, setIsSpeaking] = useState(false);
-
-    const handleSpeak = () => {
-        if (!answer) return;
-        setIsSpeaking(true);
-        speak(answer, () => setIsSpeaking(false));
-    };
+    // Define a linguagem pelo modelo
+    const ttsLang = model === "llama3" ? "en-US" : "pt-BR";
 
     return (
-        <>
-            <div className="col-start-1 col-end-8 p-3 rounded-lg">
-                <div className="ml-3 text-sm">
-                    {/* Caixa de resposta com largura limitada para não esticar */}
-                    <div className="relative bg-white py-2 px-4 shadow rounded-xl max-w-xl w-auto">
-                        <ReactMarkdown>{answer}</ReactMarkdown>
-                    </div>
+        <div className="col-start-1 col-end-8 p-3 rounded-lg">
+            <div className="ml-3 text-sm">
+                <div className="relative bg-white py-2 px-4 shadow rounded-xl max-w-xl w-auto">
+                    <ReactMarkdown>{answer}</ReactMarkdown>
+                </div>
 
-                    {/* Botão abaixo da caixa, alinhado à esquerda */}
-                    <div className="mt-2 flex justify-start">
+                <div className="mt-2 flex justify-start space-x-2">
+                    {!isSpeaking && !isStreaming && (
                         <button
-                            onClick={handleSpeak}
-                            className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-gray-800 disabled:opacity-50"
-                            aria-label={isSpeaking ? "TTS em andamento" : "Ouvir resposta"}
-                            title={isSpeaking ? "Falando..." : "Ouvir resposta"}
-                            disabled={isSpeaking}
+                            onClick={() => speak(answer, ttsLang)}
+                            className="p-2 rounded-md text-white hover:bg-gray-800"
                         >
-                            <FiVolume2 aria-hidden="true" className="w-5 h-5 text-white" />
-                            <span className="sr-only">{isSpeaking ? 'Falando...' : 'Ouvir'}</span>
+                            <FiVolume2 />
                         </button>
-                    </div>
+                    )}
+
+                    {isSpeaking && !isPaused && (
+                        <button
+                            onClick={pause}
+                            className="p-2 rounded-md text-white hover:bg-gray-800"
+                        >
+                            <FiPause />
+                        </button>
+                    )}
+
+                    {isSpeaking && isPaused && (
+                        <button
+                            onClick={resume}
+                            className="p-2 rounded-md text-white hover:bg-gray-800"
+                        >
+                            <FiPlay />
+                        </button>
+                    )}
+
+                    {isSpeaking && (
+                        <button
+                            onClick={stop}
+                            className="p-2 rounded-md text-white hover:bg-gray-800"
+                        >
+                            <FiStopCircle />
+                        </button>
+                    )}
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
