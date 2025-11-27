@@ -57,15 +57,15 @@ jobs:
 
     steps:
       - name: 📥 Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: 📦 Instalar dependências
-        run: npm install
+        run: npm ci
 
       - name: 🧪 Rodar testes (se tiver)
         run: |
@@ -78,8 +78,8 @@ jobs:
       - name: 🏗️ Build do front
         run: npm run build
 
-      - name: 📤 Enviar artifact (dist)
-        uses: actions/upload-artifact@v3
+      - name: 📤 Upload artifact (dist)
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
