@@ -1,140 +1,130 @@
 # AprovIA Frontend
 
-Este projeto é o frontend do sistema **AprovIA**, uma aplicação web desenvolvida com React, TypeScript e Vite. O objetivo do sistema é oferecer uma plataforma moderna e intuitiva para interação com uma IA, gerenciamento de usuários, upload de arquivos PDF e outras funcionalidades voltadas para facilitar o acesso e o uso de inteligência artificial em ambientes educacionais.
+Este documento descreve de forma clara o funcionamento do frontend AprovIA, sua estrutura, tecnologias utilizadas, dependências necessárias e passos para rodar / buildar o projeto.
 
 ---
 
-## 🧩 Como Funciona
+## 🔎 Visão Geral — como funciona
 
-O AprovIA Frontend é uma SPA (Single Page Application) que se comunica com um backend (API REST) para autenticação, cadastro, gerenciamento de chats e usuários. O usuário pode criar uma conta, fazer login, conversar com a IA, gerenciar seu perfil e, se for administrador, gerenciar outros usuários e realizar uploads de arquivos PDF para análise.
+AprovIA é uma SPA (React + TypeScript + Vite) que se comunica com um backend via REST/streaming para:
 
-A interface foi construída pensando em acessibilidade, responsividade e experiência do usuário, utilizando TailwindCSS para estilização e React Router para navegação entre páginas.
+- autenticação e cadastro de usuários;
+- gerenciamento de chats (criar, listar, excluir);
+- envio de mensagens e recepção de respostas da IA via streaming;
+- edição e exclusão de perfil.
 
----
-
-## 🛠️ Como Foi Desenvolvido
-
-O projeto foi estruturado em módulos para facilitar a manutenção e a escalabilidade:
-
-- **Componentização:** Cada funcionalidade (chat, upload, edição de usuário, etc.) foi separada em componentes reutilizáveis dentro de [`src/components`](src/components).
-- **Context API:** O gerenciamento de autenticação e chats utiliza React Contexts ([`src/contexts`](src/contexts)), permitindo o compartilhamento de estado global entre componentes.
-- **Tipagem Estrita:** Todas as entidades (usuário, mensagem, etc.) são fortemente tipadas com TypeScript ([`src/models`](src/models)).
-- **Serviços de API:** As requisições HTTP são centralizadas em arquivos de serviço ([`src/services`](src/services)), facilitando a integração e manutenção.
-- **Estilização:** O TailwindCSS foi customizado para garantir uma identidade visual consistente e moderna.
-- **Acessibilidade:** Foram seguidas boas práticas de acessibilidade, como uso de labels, navegação por teclado e feedbacks visuais.
+O fluxo de chat por streaming está implementado em [src/services/ChatService.ts](src/services/ChatService.ts) e consumido por [src/components/chat/Chat.tsx](src/components/chat/Chat.tsx). O componente de exibição usa [src/components/chat/ChatAnswer.tsx](src/components/chat/ChatAnswer.tsx) (inclui TTS) e o input por voz em [src/components/chat/ChatInput.tsx](src/components/chat/ChatInput.tsx).
 
 ---
 
-## ✨ Funcionalidades
+## 🏛️ Arquitetura e organização de pastas
 
-- **Autenticação de Usuário:** Cadastro, login, logout e persistência de sessão.
-- **Chat com IA:** Interface de chat para interação com a inteligência artificial, com histórico de conversas.
-- **Gerenciamento de Perfil:** Edição de dados pessoais, alteração de senha, upload de foto e exclusão de conta.
-- **Upload de PDF:** (Para administradores) Upload de arquivos PDF para análise e processamento pela IA.
-- **Administração:** Promoção de usuários para administradores e gerenciamento de permissões.
-- **Acessibilidade e Responsividade:** Interface adaptada para diferentes dispositivos e navegação facilitada.
-- **Notificações:** Feedback visual para ações do usuário através de toasts.
-- **Ajuda/FAQ:** Página de perguntas frequentes para suporte ao usuário.
-
----
-
-## 🏗️ Estrutura do Projeto
+Raiz do projeto (resumido):
 
 ```
 projetoIAWeb-front-vite/
-├── public/                # Arquivos públicos (favicon, imagens)
+├── public/
 ├── src/
-│   ├── components/        # Componentes reutilizáveis (editUser, uploadPDF, chat, etc)
-│   ├── contexts/          # Contextos globais (ex: AuthContext, ChatContext)
-│   ├── models/            # Tipos e interfaces TypeScript
-│   ├── pages/             # Páginas principais (login, register, admin, help, home, etc)
-│   ├── services/          # Serviços de API (ex: AuthService.ts, ChatService.ts)
-│   ├── utils/             # Funções utilitárias (ex: ToastAlerts.ts)
-│   ├── index.css          # Estilos globais (TailwindCSS)
-│   └── main.tsx           # Ponto de entrada da aplicação
-├── tailwind.config.js     # Configuração do TailwindCSS
-├── package.json           # Dependências e scripts do projeto
-├── tsconfig.json          # Configuração do TypeScript
-└── vite.config.ts         # Configuração do Vite
+│   ├── components/        # UI e blocos reutilizáveis (chat, sidebar, navbar, edit user, etc)
+│   ├── contexts/          # Contextos React (AuthContext, ChatContext, ModelContext)
+│   ├── models/            # Interfaces/Tipos (User, Message, UserLogin, UserType)
+│   ├── pages/             # Páginas (login, register, home, help, admin)
+│   ├── services/          # Chamadas à API (AuthService, ChatService)
+│   ├── utils/             # Utilitários (ToastAlerts)
+│   ├── index.css
+│   └── main.tsx
+├── package.json
+├── tsconfig*.json
+├── vite.config.ts
+└── tailwind.config.js
+```
+
+Links úteis:
+- Roteamento / entrada: [src/App.tsx](src/App.tsx)
+- Autenticação: [src/contexts/AuthContext.tsx](src/contexts/AuthContext.tsx) e [src/services/AuthService.ts](src/services/AuthService.ts)
+- Chat streaming: [src/services/ChatService.ts](src/services/ChatService.ts) e [src/components/chat/Chat.tsx](src/components/chat/Chat.tsx)
+- Contexto de chats: [src/contexts/ChatContext.tsx](src/contexts/ChatContext.tsx)
+
+---
+
+## 🧩 Como foi desenvolvido (padrões e decisões)
+
+- Componentização: UI dividida em componentes pequenos e reutilizáveis (Sidebar, Navbar, ChatMessage, ChatAnswer, ChatInput).
+- Context API: estado global para autenticação e lista de chats (AuthProvider, ChatProvider, ModelProvider).
+- Tipagem forte: todas as entidades usam interfaces TypeScript em [src/models](src/models).
+- Serviços responsáveis por chamadas HTTP/streaming em [src/services](src/services).
+- TailwindCSS para estilos utilitários e responsividade.
+- Acessibilidade: labels, roles e atributos ARIA em botões e formulários.
+- Streaming: ChatService retorna reader/decoder para leitura incremental e atualização de UI enquanto o servidor streama texto (ver Chat.tsx loop de leitura).
+
+---
+
+## ✨ Funcionalidades principais
+
+- Login / Logout / Persistência (localStorage quando “manter conectado”).
+- Historico de chats (sidebar).
+- Mensagens com streaming (exibição incremental).
+- Text-to-Speech para respostas (Web Speech API em ChatAnswer).
+- Reconhecimento de voz para digitação por voz (Web SpeechRecognition em ChatInput).
+- Edição e exclusão de usuário (modals).
+
+---
+
+## 🛠️ Requisitos e instalação
+
+1. Node 18+ (recomendado Node 20)
+2. Git
+
+Passos:
+
+```bash
+git clone <repo-url>
+cd projetoIAWeb-front-vite
+npm install
+# ou
+# yarn
+```
+
+Variáveis de ambiente necessárias (arquivo .env):
+- VITE_AUTH_API=http://localhost:8090   # endpoint de auth
+- VITE_CHAT_API=http://127.0.0.1:5000   # endpoint de chat (streaming)
+
+Criar .env na raiz com:
+```
+VITE_AUTH_API=http://localhost:8090
+VITE_CHAT_API=http://127.0.0.1:5000
+```
+
+Rodar em dev:
+```bash
+npm run dev
+# acessa em http://localhost:5173
+```
+
+Build para produção:
+```bash
+npm run build
+npm run preview
 ```
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+## ⚠️ Observações importantes
 
-- **React** + **TypeScript**: Framework e tipagem estática
-- **Vite**: Bundler e dev server rápido
-- **TailwindCSS**: Framework de estilos utilitário
-- **React Router DOM**: Navegação SPA
-- **Axios**: Requisições HTTP
-- **React Loader Spinner**: Indicadores de carregamento
-- **React Icons**: Ícones SVG
-- **ESLint**: Linter para código limpo
-- **Outros Plugins**: `tailwindcss-animate`, `tailwind-scrollbar`, etc.
+- O streaming depende do backend suportar responses com body em streaming; ver implementação em [src/services/ChatService.ts](src/services/ChatService.ts).
+- Para TTS e reconhecimento de voz, o navegador deve suportar Web Speech APIs.
+- Definir corretamente as variáveis VITE_* antes de iniciar, pois Vite injeta essas variáveis em tempo de build.
+- Para deploy (Vercel) veja [vercel.json](vercel.json) e workflow em [.github/workflows/pipeline.yml](.github/workflows/pipeline.yml).
 
 ---
 
-## 🛠️ Instalação e Execução
+## 📚 Referências e docs
 
-1. **Clone o repositório:**
-   ```sh
-   git clone https://github.com/seu-usuario/projetoIAWeb-front-vite.git
-   cd projetoIAWeb-front-vite
-   ```
+- Vite: https://vitejs.dev/
+- React + TypeScript: https://react.dev/
+- TailwindCSS: https://tailwindcss.com/
+- Código fonte: [package.json](package.json), [vite.config.ts](vite.config.ts)
 
-2. **Instale as dependências:**
-   ```sh
-   npm install
-   ```
-   Ou, se preferir:
-   ```sh
-   yarn
-   ```
+--- 
 
-3. **Execute o projeto em modo desenvolvimento:**
-   ```sh
-   npm run dev
-   ```
-   O projeto estará disponível em `http://localhost:5173` (ou porta definida pelo Vite).
-
----
-
-## 📦 Principais Módulos e Dependências
-
-- `react`, `react-dom`, `react-router-dom`
-- `typescript`
-- `vite`
-- `tailwindcss`, `postcss`, `autoprefixer`
-- `axios`
-- `react-loader-spinner`
-- `react-icons`
-- `eslint`
-- Plugins: `tailwindcss-animate`, `tailwind-scrollbar`
-
----
-
-## ⚙️ O que foi necessário instalar
-
-Ao rodar `npm install`, as dependências acima são baixadas automaticamente conforme o `package.json`. Para garantir o funcionamento do TailwindCSS, execute também:
-
-```sh
-npx tailwindcss init -p
-```
-
----
-
-## 📋 Observações
-
-- O backend deve estar rodando em `http://localhost:8090` para autenticação e demais funcionalidades.
-- O projeto segue boas práticas de acessibilidade e responsividade.
-- Para produção, recomenda-se configurar variáveis de ambiente e revisar as configurações de segurança.
-
----
-
-## 📚 Mais informações
-
-- [Documentação do Vite](https://vitejs.dev/)
-- [Documentação do React](https://react.dev/)
-- [Documentação do TailwindCSS](https://tailwindcss.com/)
-
----
+Contribuições e issues: abrir PRs/Issues no repositório. Obrigatório rodar lint/tests antes do merge (scripts em package.json).
