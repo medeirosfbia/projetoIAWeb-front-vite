@@ -21,9 +21,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     const [chats, setChats] = useState<Chat[]>([]);
       const { user } = useContext(AuthContext);
     const refreshChats = async () => {
-        if (user && user.username) {
+        if (user && user.username && user.token) {
             try {
-                const chatsList = await resumeChat("/chats", user.username);
+                const chatsList = await resumeChat("/chats", user.username, user.token);
                 console.log("Chats carregados:", chatsList);
                 console.log("User:", user.username);
                 setChats(chatsList);
