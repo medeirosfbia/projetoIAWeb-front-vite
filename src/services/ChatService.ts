@@ -5,6 +5,16 @@ const chatAPI = axios.create({
   baseURL: import.meta.env.VITE_CHAT_API
 });
 
+function authorizationHeader(token: string) {
+  if (!token?.trim()) {
+    throw new Error("Sessão expirada. Faça login novamente.");
+  }
+
+  return {
+    Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
+  };
+}
+
 // export async function chatAdd(endpoint: string,text: string, userId: string){
 //   try {
 //     const response = await chatAPI.post(endpoint, {message: text}, {params: {user_id: userId}});
@@ -18,9 +28,12 @@ const chatAPI = axios.create({
 //   }
 // }
 
-export async function resumeChat(endpoint: string, userId: string) {
+export async function resumeChat(endpoint: string, userId: string, token: string) {
   try {
-    const response = await chatAPI.get(endpoint, { params: { user_id: userId } });
+    const response = await chatAPI.get(endpoint, {
+      params: { user_id: userId },
+      headers: authorizationHeader(token),
+    });
     return response.data;
   } catch (error: any) {
     if (error.response) {
@@ -31,7 +44,7 @@ export async function resumeChat(endpoint: string, userId: string) {
   }
 }
 
-export async function chatStream(endpoint: string, model: string, text: string, userId: string) {
+export async function chatStream(endpoint: string, model: string, text: string, userId: string, token: string) {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_CHAT_API}${endpoint}?user_id=${userId}`,
@@ -39,6 +52,7 @@ export async function chatStream(endpoint: string, model: string, text: string, 
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...authorizationHeader(token),
         },
         body: JSON.stringify({ message: text, model: model }),
       }
@@ -58,10 +72,12 @@ export async function chatStream(endpoint: string, model: string, text: string, 
   }
 }
 
-export async function deleteChat(endpoint: string, userId: string, chatId: string) {
+export async function deleteChat(endpoint: string, userId: string, chatId: string, token: string) {
   try {
     const url = `${endpoint}/${chatId}/delete?user_id=${userId}`;
-    const response = await chatAPI.delete(url);
+    const response = await chatAPI.delete(url, {
+      headers: authorizationHeader(token),
+    });
     return response.data;
   } catch (error: any) {
     if (error.response) {

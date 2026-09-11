@@ -37,7 +37,7 @@ function Chat() {
   async function loadMessages(chatId: string) {
     // setLoading(true);
     try {
-      const response = await resumeChat(`/chats/${chatId}`, user.username);
+      const response = await resumeChat(`/chats/${chatId}`, user.username, user.token);
 
       const formattedMessages = response.messages.map((msg: any) => ({
         role: msg.role,
@@ -83,7 +83,8 @@ async function handleSendMessage(text: string) {
       endpoint,
       model,
       text,
-      user.username
+      user.username,
+      user.token
     );
 
     let done = false;

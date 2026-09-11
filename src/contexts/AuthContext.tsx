@@ -20,10 +20,21 @@ export const AuthContext = createContext({} as AuthContextProps)
 export function AuthProvider({ children }: AuthProviderProps) {
 
     function getStoredUser(): UserLogin {
-        const stored = localStorage.getItem("user");
-        if (stored) {
+        const storedUsers = [
+            localStorage.getItem("user"),
+            sessionStorage.getItem("user"),
+        ];
+
+        for (const stored of storedUsers) {
+            if (!stored) {
+                continue;
+            }
+
             try {
-                return JSON.parse(stored);
+                const parsedUser = JSON.parse(stored) as UserLogin;
+                if (parsedUser.token) {
+                    return parsedUser;
+                }
             } catch {
                 // ignore parse error
             }
@@ -62,8 +73,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 setUser(data);
                 if (keepConnected) {
                     localStorage.setItem("user", JSON.stringify(data));
+                    sessionStorage.removeItem("user");
                 } else {
                     localStorage.removeItem("user");
+                    sessionStorage.setItem("user", JSON.stringify(data));
                 }
             });
             ToastAlerts("Login efetuado com sucesso!", "sucesso")
@@ -89,6 +102,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             userType: UserType.USER
         });
         localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
     }
 
     return (

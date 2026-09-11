@@ -29,7 +29,7 @@ export default function DeleteChat({ chatId, chatTitle }: DeleteChatProps) {
 
   async function handleDelete() {
     try {
-      await deleteChat("/chats", user.username, chatId);
+      await deleteChat("/chats", user.username, chatId, user.token);
       ToastAlerts("Chat deletado com sucesso.", "sucesso");
       refreshChats();
       // Se o chat deletado é o que está aberto, redireciona
